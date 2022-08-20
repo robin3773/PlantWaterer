@@ -18,11 +18,6 @@ def connect_wifi():
             print(5 - timeout)
             timeout = timeout - 2
             time.sleep(1)
-            print('Network config:', wifi.ifconfig())
-
-    if wifi.isconnected():
-        print('Connected....')
-        print('Network config:', wifi.ifconfig())
     else:
         print('not connected')
         sys.exit()

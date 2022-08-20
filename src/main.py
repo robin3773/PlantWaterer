@@ -13,31 +13,6 @@ ADAFRUIT_IO_USERNAME = "MHR377"
 ADAFRUIT_IO_KEY = "aio_DWDV62PQKGZPASNKuvdBPePelkGb"
 TOGGLE_FEED_ID = 'led'
 
-
-def connect_wifi():
-    timeout = 0
-    wifi = network.WLAN(network.STA_IF)
-    wifi.active(True)
-    wifi.disconnect()
-    wifi.connect('SSID', 'wireless')
-    if not wifi.isconnected():
-        print('Connecting ..........')
-        while not wifi.isconnected() and timeout < 5:
-            print(5 - timeout)
-            timeout = timeout - 2
-            time.sleep(1)
-            print('Network config:', wifi.ifconfig())
-
-    if wifi.isconnected():
-        print('Connected....')
-        print('Network config:', wifi.ifconfig())
-    else:
-        print('not connected')
-        sys.exit()
-
-
-connect_wifi()
-
 client = MQTTClient(client_id=mqtt_client_id, server=ADAFRUIT_IO_URL, user=ADAFRUIT_IO_USERNAME,
                     password=ADAFRUIT_IO_KEY, ssl=False)
 try:

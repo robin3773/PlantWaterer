@@ -1,13 +1,13 @@
 import network
 
 
-class Connection:
+class Wifi:
     def __init__(self, ssid, password):
         import network
         self.ssid = ssid
         self.password = password
 
-    def wifi(self):
+    def setup(self):
         sta_if = network.WLAN(network.STA_IF)
         if not sta_if.isconnected():
             print('connecting to network...')

@@ -16,7 +16,7 @@ def connect_wifi():
         print('Connecting ..........')
         while not wifi.isconnected() and timeout < 5:
             print(5 - timeout)
-            timeout = timeout - 2
+            timeout = timeout + 1
             time.sleep(1)
     else:
         print('not connected')

@@ -1,4 +1,8 @@
 import network
 import sys
+from connection import Connection
 
-def connect_wifi():
+ssid = 'SSID'
+password = 'wireless'
+
+wifi = Connection(ssid=ssid, password=password)

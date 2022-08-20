@@ -16,5 +16,7 @@ class Connection:
             while not sta_if.isconnected():
                 pass
         print('network config:', sta_if.ifconfig())
-    def bluetooth(self):
 
+    def bluetooth(self):
+        # ON Development Stage
+        pass

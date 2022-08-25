@@ -1,6 +1,7 @@
 import network
 import sys
 import time
+import ntptime
 from machine import Pin
 
 ssid = 'SSID'
@@ -10,10 +11,8 @@ led = Pin(4, Pin.OUT)
 
 
 def blink():
-    for i in [1, 2, 3, 4, 5]:
+    for i in range(3):
         led.value(1)
-        time.sleep(0.2)
-        led.value(0)
         time.sleep(0.2)
 
 
@@ -41,4 +40,4 @@ def connect_wifi():
 
 
 connect_wifi()
-
+ntptime.settime()

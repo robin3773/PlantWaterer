@@ -1,8 +1,8 @@
 import network
 import sys
 import time
-import ntptime
 from machine import Pin
+import ntptime
 
 ssid = 'SSID'
 password = 'wireless'
@@ -11,8 +11,10 @@ led = Pin(4, Pin.OUT)
 
 
 def blink():
-    for i in range(3):
+    for i in [1, 2, 3, 4, 5]:
         led.value(1)
+        time.sleep(0.2)
+        led.value(0)
         time.sleep(0.2)
 
 
@@ -21,12 +23,12 @@ def connect_wifi():
     wifi = network.WLAN(network.STA_IF)
     wifi.active(True)
     wifi.disconnect()
-    time.sleep(5)
+    time.sleep(2)
     wifi.connect(ssid, password)
     if not wifi.isconnected():
         print('Connecting ..........')
-        while not wifi.isconnected() and timeout < 10:
-            print(10 - timeout)
+        while not wifi.isconnected() and timeout < 20:
+            print(20 - timeout)
             timeout = timeout + 1
             time.sleep(1)
 
@@ -40,4 +42,7 @@ def connect_wifi():
 
 
 connect_wifi()
-ntptime.settime()
+try:
+    ntptime.settime()
+except Exception as e:
+    print('Could not Set Time {}{}'.format(type(e).__name__, e))

@@ -10,6 +10,7 @@ def blink_led(n):
     for i in range(n):
         led.value(not led.value())
         time.sleep(0.1)
+    led.value(0)
 
 
 class AdaFruitMQTT:
@@ -18,7 +19,7 @@ class AdaFruitMQTT:
 
         self.ADAFRUIT_IO_URL = 'io.adafruit.com'
         self.ADAFRUIT_IO_USERNAME = "MHR377"
-        self.ADAFRUIT_IO_KEY = "aio_fPwW72I3cetpeD2muqDJdT7cK29u"
+        self.ADAFRUIT_IO_KEY = "aio_PKRm985CTBL2MoAWfxXekX2FgSJe"
 
         self.PUMP_FEED_ID = 'pump'
         self.TEMP_FEED_ID = 'temp'
@@ -46,18 +47,22 @@ class AdaFruitMQTT:
     def connect(self):
         try:
             self.client.connect()
+            blink_led(5)
             print('Connected to Adafruit IO! Listening for /click changes........')
             self.subscribe(self.pump_feed)
         except Exception as e:
             print('could not connect to MQTT server {}{}'.format(type(e).__name__, e))
-            if self.count < 10:
-                print('{} . Retrying..........'.format(self.count))
-                self.count += 1
+            if self.count < 5:
+                print('{:s} . Retrying..........'.format(str(self.count)))
+                self.disconnect()
             else:
                 sys.exit()
 
     def receive_and_perform(self, topic, msg):  # Callback function
-        print('Received Data:  Topic = {}, Msg = {}'.format(topic, str(msg)))
+        current_time = time.localtime(time.time() + 6 * 3600)
+        (year, month, day, hour, minute, second, *rest) = current_time
+        print('Received Data at {}/{}/{} {}:{}:{}:  Topic = {}, Msg = {}'.format(year, month, day, hour, minute, second,
+                                                                                 topic, str(msg, 'utf-8')))
         data = str(msg, 'utf-8')
         if data == "0":
             self.pump.value(0)
@@ -73,18 +78,21 @@ class AdaFruitMQTT:
         self.client.publish(self.hum_feed, bytes(str(data[1]), 'utf-8'), qos=0)
         self.client.publish(self.moisture_feed, bytes(str(data[2]), 'utf-8'), qos=0)
 
-        current_time = time.localtime()
+        current_time = time.localtime(time.time() + 6 * 3600)
         (year, month, day, hour, minute, second, *rest) = current_time
 
         print('Message Sent at {}/{}/{} {}:{}:{}'.format(year, month, day, hour, minute, second))
-        print("Temperature - {:s} Humidity - {:s} Soil Moisture - {:s}".format(str(data[0]), str(data[1]), str(data[2])))
+        print(
+            "Temperature - {:s} Humidity - {:s} Soil Moisture - {:s}".format(str(data[0]), str(data[1]), str(data[2])))
         print()
 
     def check_msg(self):
         self.client.check_msg()
+        # print('Checking message')
 
     def disconnect(self):
         self.client.disconnect()
         print('Disconnected From Adafruit IO!')
-        time.sleep(10)
+        time.sleep(1)
+        self.count += 1
         self.connect()

@@ -1,7 +1,7 @@
-from umqtt.robust import MQTTClient
-import sys
-import time
 from machine import Pin
+from umqtt.robust import MQTTClient
+import time
+import sys
 
 led = Pin(4, Pin.OUT)
 
@@ -19,7 +19,7 @@ class AdaFruitMQTT:
 
         self.ADAFRUIT_IO_URL = 'io.adafruit.com'
         self.ADAFRUIT_IO_USERNAME = "MHR377"
-        self.ADAFRUIT_IO_KEY = "aio_PKRm985CTBL2MoAWfxXekX2FgSJe"
+        self.ADAFRUIT_IO_KEY = "aio_zhOp36uDtp91qLvz9jygZ4xFhCcZ"
 
         self.PUMP_FEED_ID = 'pump'
         self.TEMP_FEED_ID = 'temp'
@@ -27,13 +27,14 @@ class AdaFruitMQTT:
         self.MOISTURE_FEED_ID = 'soil-moisture'
         self.IMAGE_FEED_ID = 'tree-photo'
         self.OUTPUT_FEED_ID = 'serial'
-        self.LED_FEED_ID = 'led'
+        self.STATUS_FEED_ID = 'status'
 
         self.temp_feed = bytes('{:s}/feeds/{:s}'.format(self.ADAFRUIT_IO_USERNAME, self.TEMP_FEED_ID), 'utf-8')
         self.hum_feed = bytes('{:s}/feeds/{:s}'.format(self.ADAFRUIT_IO_USERNAME, self.HUM_FEED_ID), 'utf-8')
         self.pump_feed = bytes('{:s}/feeds/{:s}'.format(self.ADAFRUIT_IO_USERNAME, self.PUMP_FEED_ID), 'utf-8')
         self.moisture_feed = bytes('{:s}/feeds/{:s}'.format(self.ADAFRUIT_IO_USERNAME, self.MOISTURE_FEED_ID), 'utf-8')
         self.image_feed = bytes('{:s}/feeds/{:s}'.format(self.ADAFRUIT_IO_USERNAME, self.IMAGE_FEED_ID), 'utf-8')
+        self.status_feed = bytes('{:s}/feeds/{:s}'.format(self.ADAFRUIT_IO_USERNAME, self.STATUS_FEED_ID), 'utf-8')
 
         self.client = MQTTClient(client_id=self.mqtt_client_id,
                                  server=self.ADAFRUIT_IO_URL,
@@ -68,6 +69,7 @@ class AdaFruitMQTT:
             self.pump.value(0)
         if data == "1":
             self.pump.value(1)
+        self.publish_status(data)
 
     def subscribe(self, feed):
         self.client.set_callback(self.receive_and_perform)
@@ -85,6 +87,9 @@ class AdaFruitMQTT:
         print(
             "Temperature - {:s} Humidity - {:s} Soil Moisture - {:s}".format(str(data[0]), str(data[1]), str(data[2])))
         print()
+
+    def publish_status(self, data):
+        self.client.publish(self.status_feed, bytes(str(data), 'utf-8'), qos=0)
 
     def check_msg(self):
         self.client.check_msg()
